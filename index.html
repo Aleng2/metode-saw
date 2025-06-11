@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPK Beasiswa - Metode SAW</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .section h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-success:hover {
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        
+        th, td {
+            padding: 15px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        th {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+            transition: all 0.3s ease;
+        }
+        
+        .result-card {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
+        }
+        
+        .criteria-weights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .weight-input {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e1e8ed;
+        }
+        
+        .ranking {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .rank-1 { background: linear-gradient(45deg, #f1c40f, #f39c12); }
+        .rank-2 { background: linear-gradient(45deg, #95a5a6, #7f8c8d); }
+        .rank-3 { background: linear-gradient(45deg, #cd853f, #a0522d); }
+        
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        
+        .alert-info {
+            background-color: #e3f2fd;
+            border-left-color: #2196f3;
+            color: #1976d2;
+        }
+        
+        .scrollable-table {
+            overflow-x: auto;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-group {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Sistem Pendukung Keputusan Beasiswa</h1>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px; font-size: 1.1rem;">
+            Menggunakan Metode SAW (Simple Additive Weighting)
+        </p>
+        
+        <!-- Pengaturan Bobot Kriteria -->
+        <div class="section">
+            <h2>⚖️ Pengaturan Bobot Kriteria</h2>
+            <div class="alert alert-info">
+                <strong>Catatan:</strong> Total bobot harus sama dengan 1.0 (100%). Sistem akan otomatis menormalisasi jika total tidak sama dengan 1.0.
+            </div>
+            <div class="criteria-weights">
+                <div class="weight-input">
+                    <label>IPK (Indeks Prestasi Kumulatif)</label>
+                    <input type="number" id="w1" value="0.25" step="0.01" min="0" max="1">
+                    <small style="color: #7f8c8d;">Benefit (Semakin tinggi semakin baik)</small>
+                </div>
+                <div class="weight-input">
+                    <label>Penghasilan Orang Tua</label>
+                    <input type="number" id="w2" value="0.20" step="0.01" min="0" max="1">
+                    <small style="color: #7f8c8d;">Cost (Semakin rendah semakin baik)</small>
+                </div>
+                <div class="weight-input">
+                    <label>Jumlah Tanggungan Keluarga</label>
+                    <input type="number" id="w3" value="0.15" step="0.01" min="0" max="1">
+                    <small style="color: #7f8c8d;">Benefit (Semakin banyak semakin baik)</small>
+                </div>
+                <div class="weight-input">
+                    <label>Prestasi Non-Akademik</label>
+                    <input type="number" id="w4" value="0.15" step="0.01" min="0" max="1">
+                    <small style="color: #7f8c8d;">Benefit (Semakin tinggi semakin baik)</small>
+                </div>
+                <div class="weight-input">
+                    <label>Organisasi dan Kepemimpinan</label>
+                    <input type="number" id="w5" value="0.15" step="0.01" min="0" max="1">
+                    <small style="color: #7f8c8d;">Benefit (Semakin tinggi semakin baik)</small>
+                </div>
+                <div class="weight-input">
+                    <label>Semester Aktif</label>
+                    <input type="number" id="w6" value="0.10" step="0.01" min="0" max="1">
+                    <small style="color: #7f8c8d;">Benefit (Semester tinggi = prioritas)</small>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <span id="totalWeight" style="font-weight: bold; font-size: 1.2rem;">Total Bobot: 1.00</span>
+            </div>
+        </div>
+        
+        <!-- Input Data Mahasiswa -->
+        <div class="section">
+            <h2>👨‍🎓 Input Data Mahasiswa</h2>
+            <div class="form-group">
+                <div>
+                    <label>Nama Mahasiswa</label>
+                    <input type="text" id="nama" placeholder="Masukkan nama lengkap">
+                </div>
+                <div>
+                    <label>NIM</label>
+                    <input type="text" id="nim" placeholder="Nomor Induk Mahasiswa">
+                </div>
+                <div>
+                    <label>IPK (0.00 - 4.00)</label>
+                    <input type="number" id="ipk" placeholder="3.50" step="0.01" min="0" max="4">
+                </div>
+                <div>
+                    <label>Penghasilan Orang Tua (Juta/bulan)</label>
+                    <input type="number" id="penghasilan" placeholder="5.0" step="0.1" min="0">
+                </div>
+                <div>
+                    <label>Jumlah Tanggungan Keluarga</label>
+                    <input type="number" id="tanggungan" placeholder="4" min="1" max="20">
+                </div>
+                <div>
+                    <label>Prestasi Non-Akademik (1-5)</label>
+                    <select id="prestasi">
+                        <option value="">Pilih tingkat prestasi</option>
+                        <option value="1">1 - Tidak ada prestasi</option>
+                        <option value="2">2 - Prestasi tingkat fakultas</option>
+                        <option value="3">3 - Prestasi tingkat universitas</option>
+                        <option value="4">4 - Prestasi tingkat regional/nasional</option>
+                        <option value="5">5 - Prestasi tingkat internasional</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Organisasi dan Kepemimpinan (1-5)</label>
+                    <select id="organisasi">
+                        <option value="">Pilih tingkat keterlibatan</option>
+                        <option value="1">1 - Tidak aktif organisasi</option>
+                        <option value="2">2 - Anggota organisasi</option>
+                        <option value="3">3 - Pengurus organisasi</option>
+                        <option value="4">4 - Ketua organisasi/divisi</option>
+                        <option value="5">5 - Ketua BEM/organisasi besar</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Semester Aktif</label>
+                    <input type="number" id="semester" placeholder="6" min="1" max="14">
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn" onclick="tambahMahasiswa()">➕ Tambah Mahasiswa</button>
+                <button class="btn btn-success" onclick="hitungSAW()">🧮 Hitung Metode SAW</button>
+                <button class="btn btn-warning" onclick="loadContohData()">🎯 Load Data Contoh</button>
+                <button class="btn" onclick="eksporExcel()" style="background: linear-gradient(45deg, #27ae60, #229954);">📊 Ekspor ke Excel</button>
+                <button class="btn btn-danger" onclick="resetData()">🗑️ Reset Data</button>
+            </div>
+        </div>
+        
+        <!-- Data Mahasiswa -->
+        <div class="section">
+            <h2>📋 Data Mahasiswa</h2>
+            <div class="scrollable-table">
+                <table id="dataMahasiswa">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>NIM</th>
+                            <th>IPK</th>
+                            <th>Penghasilan<br>(Juta)</th>
+                            <th>Tanggungan</th>
+                            <th>Prestasi</th>
+                            <th>Organisasi</th>
+                            <th>Semester</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Hasil Perhitungan -->
+        <div class="section" id="hasilSection" style="display: none;">
+            <h2>📊 Hasil Perhitungan Metode SAW</h2>
+            
+            <!-- Matriks Keputusan -->
+            <h3 style="color: #2c3e50; margin: 20px 0;">Matriks Keputusan (X)</h3>
+            <div class="scrollable-table">
+                <table id="matriksKeputusan"></table>
+            </div>
+            
+            <!-- Matriks Normalisasi -->
+            <h3 style="color: #2c3e50; margin: 20px 0;">Matriks Normalisasi (R)</h3>
+            <div class="scrollable-table">
+                <table id="matriksNormalisasi"></table>
+            </div>
+            
+            <!-- Hasil Akhir -->
+            <h3 style="color: #2c3e50; margin: 20px 0;">Hasil Akhir dan Ranking</h3>
+            <div class="scrollable-table">
+                <table id="hasilAkhir"></table>
+            </div>
+            
+            <div class="result-card">
+                <h3>🏆 Rekomendasi Penerima Beasiswa</h3>
+                <div id="rekomendasiText"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dataMahasiswa = [];
+        
+        // Update total bobot saat input berubah
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('[id^="w"]').forEach(input => {
+                input.addEventListener('input', updateTotalWeight);
+            });
+            updateTotalWeight();
+        });
+        
+        function updateTotalWeight() {
+            const weights = ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'];
+            let total = 0;
+            weights.forEach(w => {
+                const value = parseFloat(document.getElementById(w).value) || 0;
+                total += value;
+            });
+            document.getElementById('totalWeight').textContent = `Total Bobot: ${total.toFixed(2)}`;
+            if (Math.abs(total - 1.0) > 0.01) {
+                document.getElementById('totalWeight').style.color = '#e74c3c';
+            } else {
+                document.getElementById('totalWeight').style.color = '#27ae60';
+            }
+        }
+        
+        function tambahMahasiswa() {
+            const nama = document.getElementById('nama').value.trim();
+            const nim = document.getElementById('nim').value.trim();
+            const ipk = parseFloat(document.getElementById('ipk').value);
+            const penghasilan = parseFloat(document.getElementById('penghasilan').value);
+            const tanggungan = parseInt(document.getElementById('tanggungan').value);
+            const prestasi = parseInt(document.getElementById('prestasi').value);
+            const organisasi = parseInt(document.getElementById('organisasi').value);
+            const semester = parseInt(document.getElementById('semester').value);
+            
+            if (!nama || !nim || isNaN(ipk) || isNaN(penghasilan) || isNaN(tanggungan) || isNaN(prestasi) || isNaN(organisasi) || isNaN(semester)) {
+                alert('Mohon lengkapi semua data mahasiswa!');
+                return;
+            }
+            
+            if (ipk < 0 || ipk > 4) {
+                alert('IPK harus antara 0.00 - 4.00!');
+                return;
+            }
+            
+            const mahasiswa = {
+                nama, nim, ipk, penghasilan, tanggungan, prestasi, organisasi, semester
+            };
+            
+            dataMahasiswa.push(mahasiswa);
+            tampilkanDataMahasiswa();
+            clearForm();
+            alert('Data mahasiswa berhasil ditambahkan!');
+        }
+        
+        function clearForm() {
+            ['nama', 'nim', 'ipk', 'penghasilan', 'tanggungan', 'prestasi', 'organisasi', 'semester'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+        }
+        
+        function tampilkanDataMahasiswa() {
+            const tbody = document.querySelector('#dataMahasiswa tbody');
+            tbody.innerHTML = '';
+            
+            if (dataMahasiswa.length === 0) {
+                const row = tbody.insertRow();
+                row.innerHTML = '<td colspan="10" style="text-align: center; color: #7f8c8d; padding: 20px;">Belum ada data mahasiswa</td>';
+                return;
+            }
+            
+            dataMahasiswa.forEach((mhs, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${mhs.nama}</td>
+                    <td>${mhs.nim}</td>
+                    <td>${mhs.ipk.toFixed(2)}</td>
+                    <td>${mhs.penghasilan.toFixed(1)}</td>
+                    <td>${mhs.tanggungan}</td>
+                    <td>${mhs.prestasi}</td>
+                    <td>${mhs.organisasi}</td>
+                    <td>${mhs.semester}</td>
+                    <td>
+                        <button onclick="hapusMahasiswa(${index})" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
+                            🗑️ Hapus
+                        </button>
+                    </td>
+                `;
+            });
+        }
+        
+        function hapusMahasiswa(index) {
+            if (confirm('Yakin ingin menghapus data mahasiswa ini?')) {
+                dataMahasiswa.splice(index, 1);
+                tampilkanDataMahasiswa();
+            }
+        }
+        
+        function hitungSAW() {
+            if (dataMahasiswa.length === 0) {
+                alert('Tambahkan data mahasiswa terlebih dahulu!');
+                return;
+            }
+            
+            // Normalisasi bobot
+            const weights = ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].map(w => parseFloat(document.getElementById(w).value) || 0);
+            const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+            const normalizedWeights = weights.map(w => w / totalWeight);
+            
+            // Matriks keputusan
+            const criteria = ['ipk', 'penghasilan', 'tanggungan', 'prestasi', 'organisasi', 'semester'];
+            const benefitCriteria = [true, false, true, true, true, true]; // false untuk cost criteria
+            
+            // Hitung nilai min/max untuk normalisasi
+            const minMax = criteria.map((criterion, i) => {
+                const values = dataMahasiswa.map(mhs => mhs[criterion]);
+                return benefitCriteria[i] ? Math.max(...values) : Math.min(...values);
+            });
+            
+            // Normalisasi matriks
+            const normalizedMatrix = dataMahasiswa.map(mhs => 
+                criteria.map((criterion, i) => {
+                    if (benefitCriteria[i]) {
+                        return mhs[criterion] / minMax[i];
+                    } else {
+                        return minMax[i] / mhs[criterion];
+                    }
+                })
+            );
+            
+            // Hitung skor SAW
+            const scores = normalizedMatrix.map(row => 
+                row.reduce((sum, value, i) => sum + (value * normalizedWeights[i]), 0)
+            );
+            
+            // Ranking
+            const hasilDenganRanking = dataMahasiswa.map((mhs, i) => ({
+                ...mhs,
+                normalized: normalizedMatrix[i],
+                score: scores[i]
+            })).sort((a, b) => b.score - a.score);
+            
+            tampilkanHasil(hasilDenganRanking, normalizedWeights);
+        }
+        
+        function tampilkanHasil(hasil, weights) {
+            // Matriks Keputusan
+            const matriksKeputusan = document.getElementById('matriksKeputusan');
+            matriksKeputusan.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Alternatif</th>
+                        <th>IPK (C1)</th>
+                        <th>Penghasilan (C2)</th>
+                        <th>Tanggungan (C3)</th>
+                        <th>Prestasi (C4)</th>
+                        <th>Organisasi (C5)</th>
+                        <th>Semester (C6)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${hasil.map((mhs, i) => `
+                        <tr>
+                            <td>A${i+1} (${mhs.nama})</td>
+                            <td>${mhs.ipk.toFixed(2)}</td>
+                            <td>${mhs.penghasilan.toFixed(1)}</td>
+                            <td>${mhs.tanggungan}</td>
+                            <td>${mhs.prestasi}</td>
+                            <td>${mhs.organisasi}</td>
+                            <td>${mhs.semester}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            
+            // Matriks Normalisasi
+            const matriksNormalisasi = document.getElementById('matriksNormalisasi');
+            matriksNormalisasi.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Alternatif</th>
+                        <th>R11</th>
+                        <th>R12</th>
+                        <th>R13</th>
+                        <th>R14</th>
+                        <th>R15</th>
+                        <th>R16</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${hasil.map((mhs, i) => `
+                        <tr>
+                            <td>A${i+1}</td>
+                            ${mhs.normalized.map(val => `<td>${val.toFixed(4)}</td>`).join('')}
+                        </tr>
+                    `).join('')}
+                    <tr style="background: #f39c12; color: white; font-weight: bold;">
+                        <td>Bobot (W)</td>
+                        ${weights.map(w => `<td>${w.toFixed(3)}</td>`).join('')}
+                    </tr>
+                </tbody>
+            `;
+            
+            // Hasil Akhir
+            const hasilAkhir = document.getElementById('hasilAkhir');
+            hasilAkhir.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Ranking</th>
+                        <th>Nama</th>
+                        <th>NIM</th>
+                        <th>Skor SAW</th>
+                        <th>Rekomendasi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${hasil.map((mhs, i) => `
+                        <tr>
+                            <td><span class="ranking rank-${i < 3 ? i+1 : 4}">#${i+1}</span></td>
+                            <td>${mhs.nama}</td>
+                            <td>${mhs.nim}</td>
+                            <td>${mhs.score.toFixed(6)}</td>
+                            <td>${i < Math.ceil(hasil.length * 0.3) ? '✅ Direkomendasikan' : '❌ Tidak Direkomendasikan'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            
+            // Rekomendasi
+            const jumlahDiterima = Math.ceil(hasil.length * 0.3);
+            const penerima = hasil.slice(0, jumlahDiterima);
+            document.getElementById('rekomendasiText').innerHTML = `
+                <p>Berdasarkan perhitungan metode SAW, berikut adalah ${jumlahDiterima} mahasiswa yang direkomendasikan untuk menerima beasiswa:</p>
+                <ol style="text-align: left; margin: 20px 0;">
+                    ${penerima.map(mhs => `
+                        <li><strong>${mhs.nama}</strong> (${mhs.nim}) - Skor: ${mhs.score.toFixed(6)}</li>
+                    `).join('')}
+                </ol>
+            `;
+            
+            document.getElementById('hasilSection').style.display = 'block';
+            alert('Perhitungan SAW berhasil! Scroll ke bawah untuk melihat hasil.');
+        }
+        
+        function eksporExcel() {
+            if (dataMahasiswa.length === 0) {
+                alert('Tidak ada data untuk diekspor!');
+                return;
+            }
+            
+            // Data untuk Excel
+            const worksheetData = [
+                ['SISTEM PENDUKUNG KEPUTUSAN BEASISWA - METODE SAW'],
+                [''],
+                ['Data Mahasiswa'],
+                ['No', 'Nama', 'NIM', 'IPK', 'Penghasilan (Juta)', 'Tanggungan', 'Prestasi', 'Organisasi', 'Semester'],
+                ...dataMahasiswa.map((mhs, i) => [
+                    i + 1, mhs.nama, mhs.nim, mhs.ipk, mhs.penghasilan, 
+                    mhs.tanggungan, mhs.prestasi, mhs.organisasi, mhs.semester
+                ])
+            ];
+            
+            const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Beasiswa');
+            
+            XLSX.writeFile(wb, 'SPK_Beasiswa_SAW.xlsx');
+            alert('File Excel berhasil diunduh!');
+        }
+        
+        function resetData() {
+            if (confirm('Yakin ingin menghapus semua data?')) {
+                dataMahasiswa = [];
+                tampilkanDataMahasiswa();
+                document.getElementById('hasilSection').style.display = 'none';
+                clearForm();
+                alert('Semua data berhasil dihapus!');
+            }
+        }
+        
+        function loadContohData() {
+            if (dataMahasiswa.length > 0 && !confirm('Data yang ada akan digantikan dengan contoh data. Lanjutkan?')) {
+                return;
+            }
+            
+            dataMahasiswa = [
+                {
+                    nama: "Andi Wijaya",
+                    nim: "123456789",
+                    ipk: 3.75,
+                    penghasilan: 2.5,
+                    tanggungan: 4,
+                    prestasi: 4,
+                    organisasi: 5,
+                    semester: 6
+                },
+                {
+                    nama: "Budi Santoso",
+                    nim: "987654321",
+                    ipk: 3.20,
+                    penghasilan: 8.0,
+                    tanggungan: 2,
+                    prestasi: 2,
+                    organisasi: 3,
+                    semester: 4
+                },
+                {
+                    nama: "Citra Lestari",
+                    nim: "456789123",
+                    ipk: 3.90,
+                    penghasilan: 1.8,
+                    tanggungan: 5,
+                    prestasi: 5,
+                    organisasi: 4,
+                    semester: 8
+                },
+                {
+                    nama: "Dewi Anggraeni",
+                    nim: "321654987",
+                    ipk: 3.45,
+                    penghasilan: 5.0,
+                    tanggungan: 3,
+                    prestasi: 3,
+                    organisasi: 2,
+                    semester: 5
+                },
+                {
+                    nama: "Eko Prasetyo",
+                    nim: "789123456",
+                    ipk: 3.10,
+                    penghasilan: 10.0,
+                    tanggungan: 1,
+                    prestasi: 1,
+                    organisasi: 1,
+                    semester: 3
+                }
+            ];
+            
+            tampilkanDataMahasiswa();
+            alert('Data contoh berhasil dimuat!');
+        }
+    </script>
+</body>
+</html>
