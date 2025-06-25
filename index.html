@@ -461,17 +461,7 @@
       }
 
       function getSKTMStatus(value) {
-        return value === 1 ? "Punya SKTM" : "Tidak punya"
-        /*switch (value) {
-          case 1:
-            return "Tidak ada";
-          case 2:
-            return "RT/RW";
-          case 3:
-            return "Kelurahan";
-          default:
-            return "-";
-        }*/
+        return value === 1 ? "Punya SKTM" : "Tidak punya";
       }
 
       window.tambahMahasiswa = function () {
@@ -534,88 +524,101 @@
       };
 
       window.loadContohData = function () {
+        // Data contoh yang lebih realistis dan sesuai dengan kriteria beasiswa
         mahasiswaList = [
           {
-            nama: "Ani Yudhoyono",
+            nama: "Ahmad Rizki",
             nim: "210101",
-            c1: 3.8,
-            c2: 4.5,
-            c3: 4,
-            c4: 4,
-            c5: 3,
-            c6: 5,
-            c7: 3,
+            c1: 3.8,  // IPK tinggi
+            c2: 1.2,  // Penghasilan rendah (1.2 juta)
+            c3: 5,    // Tanggungan keluarga banyak
+            c4: 4,    // Prestasi baik
+            c5: 3,    // Organisasi cukup
+            c6: 6,    // Semester tinggi (butuh bantuan)
+            c7: 1,    // Punya SKTM
           },
           {
-            nama: "Budi Hartono",
+            nama: "Siti Nurhaliza",
             nim: "210102",
-            c1: 3.5,
-            c2: 2.0,
-            c3: 5,
-            c4: 3,
-            c5: 4,
-            c6: 5,
-            c7: 2,
+            c1: 3.6,  // IPK cukup baik
+            c2: 0.8,  // Penghasilan sangat rendah
+            c3: 6,    // Tanggungan sangat banyak
+            c4: 3,    // Prestasi cukup
+            c5: 2,    // Organisasi rendah
+            c6: 7,    // Semester tinggi
+            c7: 1,    // Punya SKTM
           },
           {
-            nama: "Citra Lestari",
+            nama: "Budi Santoso",
             nim: "210103",
-            c1: 3.9,
-            c2: 6.0,
-            c3: 2,
-            c4: 5,
-            c5: 5,
-            c6: 7,
-            c7: 1,
+            c1: 3.9,  // IPK sangat baik
+            c2: 2.5,  // Penghasilan menengah
+            c3: 2,    // Tanggungan sedikit
+            c4: 5,    // Prestasi sangat baik
+            c5: 5,    // Organisasi aktif
+            c6: 4,    // Semester rendah
+            c7: 0,    // Tidak punya SKTM
           },
           {
-            nama: "Doni Firmansyah",
+            nama: "Dewi Lestari",
             nim: "210104",
-            c1: 3.2,
-            c2: 3.5,
-            c3: 3,
-            c4: 2,
-            c5: 2,
-            c6: 3,
-            c7: 1,
+            c1: 3.4,  // IPK cukup
+            c2: 1.0,  // Penghasilan rendah
+            c3: 4,    // Tanggungan cukup banyak
+            c4: 2,    // Prestasi rendah
+            c5: 3,    // Organisasi cukup
+            c6: 5,    // Semester cukup tinggi
+            c7: 1,    // Punya SKTM
           },
           {
-            nama: "Eka Putri",
+            nama: "Eko Prasetyo",
             nim: "210105",
-            c1: 3.7,
-            c2: 1.5,
-            c3: 6,
-            c4: 4,
-            c5: 4,
-            c6: 5,
-            c7: 3,
+            c1: 3.2,  // IPK rendah
+            c2: 0.5,  // Penghasilan sangat rendah
+            c3: 7,    // Tanggungan sangat banyak
+            c4: 1,    // Prestasi rendah
+            c5: 2,    // Organisasi rendah
+            c6: 8,    // Semester sangat tinggi
+            c7: 1,    // Punya SKTM
           },
           {
-            nama: "Fajar Setiawan",
+            nama: "Fitri Handayani",
             nim: "210106",
-            c1: 3.6,
-            c2: 5.0,
-            c3: 3,
-            c4: 3,
-            c5: 3,
-            c6: 6,
-            c7: 2,
+            c1: 3.7,  // IPK baik
+            c2: 3.0,  // Penghasilan tinggi
+            c3: 1,    // Tanggungan sedikit
+            c4: 4,    // Prestasi baik
+            c5: 4,    // Organisasi baik
+            c6: 3,    // Semester rendah
+            c7: 0,    // Tidak punya SKTM
           },
           {
-            nama: "Gita Permata",
+            nama: "Galih Permana",
             nim: "210107",
-            c1: 3.4,
-            c2: 1.0,
-            c3: 4,
-            c4: 2,
-            c5: 2,
-            c6: 4,
-            c7: 3,
+            c1: 3.5,  // IPK cukup baik
+            c2: 1.5,  // Penghasilan rendah
+            c3: 3,    // Tanggungan cukup
+            c4: 3,    // Prestasi cukup
+            c5: 3,    // Organisasi cukup
+            c6: 6,    // Semester tinggi
+            c7: 1,    // Punya SKTM
           },
+          {
+            nama: "Hana Kusuma",
+            nim: "210108",
+            c1: 3.1,  // IPK rendah
+            c2: 4.0,  // Penghasilan tinggi
+            c3: 2,    // Tanggungan sedikit
+            c4: 2,    // Prestasi rendah
+            c5: 1,    // Organisasi rendah
+            c6: 2,    // Semester rendah
+            c7: 0,    // Tidak punya SKTM
+          }
         ];
+        
         renderMahasiswaTable();
         document.getElementById("hasilSection").style.display = "none";
-        Swal.fire("Berhasil", "Data contoh berhasil dimuat.", "info");
+        Swal.fire("Berhasil", "Data contoh berhasil dimuat dengan data yang lebih realistis.", "info");
       };
 
       window.resetData = function () {
@@ -665,7 +668,7 @@
           parseInt(document.getElementById("jumlahRekomendasi").value) || 3;
         const criteriaTypes = {
           c1: "benefit", // IPK (semakin tinggi semakin baik)
-          c2: "cost", // Penghasilan (semakin rendah semakin baik)
+          c2: "cost",    // Penghasilan (semakin rendah semakin baik)
           c3: "benefit", // Tanggungan (semakin banyak semakin butuh)
           c4: "benefit", // Prestasi (semakin tinggi semakin baik)
           c5: "benefit", // Organisasi (semakin tinggi semakin baik)
