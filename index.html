@@ -649,86 +649,115 @@ Swal.fire({
         });
       };
 
-      window.hitungSAW = function () {
-        if (mahasiswaList.length < 2) {
-          Swal.fire(
-            "Peringatan!",
-            "Tambahkan minimal 2 data mahasiswa untuk dihitung.",
-            "warning"
-          );
-          return;
-        }
-        if (
-          parseFloat(
-            document.getElementById("totalWeight").textContent.split(": ")[1]
-          ) !== 1.0
-        ) {
-          Swal.fire(
-            "Peringatan!",
-            "Total bobot kriteria harus sama dengan 1.00.",
-            "warning"
-          );
-          return;
-        }
-
-        const weights = getWeights();
-        const jumlahRekomendasi =
-          parseInt(document.getElementById("jumlahRekomendasi").value) || 3;
-        const criteriaTypes = {
-          c1: "benefit", // IPK (semakin tinggi semakin baik)
-          c2: "cost",    // Penghasilan (semakin rendah semakin baik)
-          c3: "benefit", // Tanggungan (semakin banyak semakin butuh)
-          c4: "benefit", // Prestasi (semakin tinggi semakin baik)
-          c5: "benefit", // Organisasi (semakin tinggi semakin baik)
-          c6: "benefit", // Semester (semakin tinggi semakin butuh)
-          c7: "benefit", // SKTM (semakin tinggi semakin butuh)
-        };
-
-        const minMax = {};
-        Object.keys(criteriaTypes).forEach((c) => {
-          const values = mahasiswaList.map((mhs) => mhs[c]);
-          minMax[c] =
-            criteriaTypes[c] === "benefit"
-              ? Math.max(...values)
-              : Math.min(...values);
-        });
-
-        const normalizedMatrix = mahasiswaList.map((mhs) => {
-          const normalized = { nama: mhs.nama };
-          Object.keys(criteriaTypes).forEach((c) => {
-            const val = mhs[c];
-            const maxMinVal = minMax[c];
-            if (criteriaTypes[c] === "benefit") {
-              normalized[c] = val / maxMinVal || 0;
-            } else {
-              normalized[c] = maxMinVal / val || 0;
-            }
-          });
-          return normalized;
-        });
-
-        const finalScores = mahasiswaList.map((mhs, index) => {
-          let score = 0;
-          Object.keys(weights).forEach((wKey) => {
-            const cKey = "c" + wKey.substring(1);
-            score += normalizedMatrix[index][cKey] * weights[wKey];
-          });
-          return { nama: mhs.nama, nim: mhs.nim, skor: score };
-        });
-
-        finalScores.sort((a, b) => b.skor - a.skor);
-        finalScores.forEach((item, index) => (item.rank = index + 1));
-
-        renderHasil(
-          mahasiswaList,
-          normalizedMatrix,
-          finalScores,
-          jumlahRekomendasi
-        );
-        const hasilSection = document.getElementById("hasilSection");
-        hasilSection.style.display = "block";
-        hasilSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      };
+      window.hitungSAW = function() {
+  if (mahasiswaList.length < 2) {
+    Swal.fire(
+      "Peringatan!",
+      "Tambahkan minimal 2 data mahasiswa untuk dihitung.",
+      "warning"
+    );
+    return;
+  }
+  if (
+    parseFloat(
+      document.getElementById("totalWeight").textContent.split(": ")[1]
+    ) !== 1.0
+  ) {
+    Swal.fire(
+      "Peringatan!",
+      "Total bobot kriteria harus sama dengan 1.00.",
+      "warning"
+    );
+    return;
+  }
+  
+  const weights = getWeights();
+  const jumlahRekomendasi =
+    parseInt(document.getElementById("jumlahRekomendasi").value) || 3;
+  const criteriaTypes = {
+    c1: "benefit", // IPK (semakin tinggi semakin baik)
+    c2: "cost", // Penghasilan (semakin rendah semakin baik)
+    c3: "benefit", // Tanggungan (semakin banyak semakin butuh)
+    c4: "benefit", // Prestasi (semakin tinggi semakin baik)
+    c5: "benefit", // Organisasi (semakin tinggi semakin baik)
+    c6: "benefit", // Semester (semakin tinggi semakin butuh)
+    c7: "benefit", // SKTM (semakin tinggi semakin butuh)
+  };
+  
+  // Periksa apakah SKTM memiliki bobot 100%
+  const isSktmFullWeight = weights.w7 === 1;
+  
+  const minMax = {};
+  Object.keys(criteriaTypes).forEach((c) => {
+    const values = mahasiswaList.map((mhs) => mhs[c]);
+    minMax[c] =
+      criteriaTypes[c] === "benefit" ?
+      Math.max(...values) :
+      Math.min(...values);
+  });
+  
+  const normalizedMatrix = mahasiswaList.map((mhs) => {
+    const normalized = { nama: mhs.nama };
+    Object.keys(criteriaTypes).forEach((c) => {
+      const val = mhs[c];
+      const maxMinVal = minMax[c];
+      if (criteriaTypes[c] === "benefit") {
+        normalized[c] = val / maxMinVal || 0;
+      } else {
+        normalized[c] = maxMinVal / val || 0;
+      }
+    });
+    return normalized;
+  });
+  
+  const finalScores = mahasiswaList.map((mhs, index) => {
+    let score = 0;
+    Object.keys(weights).forEach((wKey) => {
+      const cKey = "c" + wKey.substring(1);
+      score += normalizedMatrix[index][cKey] * weights[wKey];
+    });
+    return {
+      nama: mhs.nama,
+      nim: mhs.nim,
+      skor: score,
+      hasSktm: mhs.c7 === 1 // Tambahkan flag untuk menandai punya SKTM
+    };
+  });
+  
+  // Urutkan berdasarkan skor
+  finalScores.sort((a, b) => b.skor - a.skor);
+  
+  // Filter jika SKTM bobot 100%
+  let filteredScores = finalScores;
+  if (isSktmFullWeight) {
+    filteredScores = finalScores.filter(mhs => mhs.hasSktm);
+    
+    // Tampilkan peringatan jika jumlah rekomendasi melebihi yang punya SKTM
+    if (jumlahRekomendasi > filteredScores.length) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Informasi',
+        text: `Hanya ada ${filteredScores.length} mahasiswa yang memiliki SKTM. Jumlah rekomendasi disesuaikan.`,
+        //timer: 3000,
+        showConfirmButton: false
+      });
+    }
+  }
+  
+  // Beri peringkat setelah filter
+  filteredScores.forEach((item, index) => (item.rank = index + 1));
+  
+  renderHasil(
+    mahasiswaList,
+    normalizedMatrix,
+    filteredScores,
+    Math.min(jumlahRekomendasi, filteredScores.length) // Jangan melebihi jumlah yang tersedia
+  );
+  
+  const hasilSection = document.getElementById("hasilSection");
+  hasilSection.style.display = "block";
+  hasilSection.scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
       // --- Fungsi Helper ---
 
