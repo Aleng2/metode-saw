@@ -617,9 +617,17 @@
         ];
         
         renderMahasiswaTable();
-        document.getElementById("hasilSection").style.display = "none";
-        Swal.fire("Berhasil", "Data contoh berhasil dimuat dengan data yang lebih realistis.", "info");
-      };
+document.getElementById("hasilSection").style.display = "none";
+Swal.fire({
+  title: "Berhasil",
+  text: "Data contoh berhasil dimuat",
+  icon: "success", // Ganti dengan icon success (centang hijau)
+  confirmButtonText: "OK",
+  showConfirmButton: true // Pastikan tombol confirm ada
+}).then(() => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+};
 
       window.resetData = function () {
         Swal.fire({
